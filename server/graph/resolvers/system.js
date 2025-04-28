@@ -200,6 +200,7 @@ module.exports = {
 
             try {
               await WIKI.models.users.createNewUser({
+                isStudent: false,
                 providerKey: usr.provider,
                 email: usr.email,
                 name: usr.name,

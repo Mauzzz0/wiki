@@ -1,6 +1,7 @@
 const _ = require('lodash')
 const graphHelper = require('../../helpers/graph')
 const moment = require('moment')
+const constants = require('../../app/custom.constants')
 
 /* global WIKI */
 
@@ -478,12 +479,9 @@ module.exports = {
         const nbsp = '<p>&nbsp;</p>\n'
         const header = `<blockquote><p><strong>⛔️ Технический раздел!</strong> Обновление от <strong>${moment().format('DD.MM.YYYY HH:mm')}</strong></p></blockquote>\n`
 
-        const contentPageId = 232
-        const planPageId = 2
-
         const [page] = await WIKI.models.pages.query()
           .select()
-          .where('id', contentPageId)
+          .where('id', constants.contentPageId)
 
         if (!page) {
           throw Error('Content page not found')
@@ -491,7 +489,7 @@ module.exports = {
 
         const [planPage] = await WIKI.models.pages.query()
           .select()
-          .where('id', planPageId)
+          .where('id', constants.planPageId)
 
         let pages = await WIKI.models.pages.query()
           .select('id', 'path', 'orderPriority', 'title')
@@ -571,7 +569,7 @@ module.exports = {
         content += closeTag
 
         await WIKI.models.pages.query()
-          .where('id', contentPageId)
+          .where('id', constants.contentPageId)
           .patch({ content })
 
         await WIKI.models.pages.renderPage(page)

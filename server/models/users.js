@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken')
 const Model = require('objection').Model
 const validate = require('validate.js')
 const qr = require('qr-image')
+const constants = require('../app/custom.constants')
 
 const bcryptRegexp = /^\$2[ayb]\$[0-9]{2}\$[A-Za-z0-9./]{53}$/
 
@@ -502,7 +503,7 @@ module.exports = class User extends Model {
       if (!usr.isActive) {
         throw new WIKI.Error.AuthAccountBanned()
       }
-      
+
       await WIKI.models.users.query().patch({
         password: newPassword,
         mustChangePwd: false
@@ -559,8 +560,9 @@ module.exports = class User extends Model {
    * Create a new user
    *
    * @param {Object} param0 User Fields
+   * @param {Object} adminUser Request user fields
    */
-  static async createNewUser ({ providerKey, email, passwordRaw, name, groups, mustChangePassword, sendWelcomeEmail }) {
+  static async createNewUser ({ isStudent, providerKey, email, passwordRaw, name, groups, mustChangePassword, sendWelcomeEmail }, adminUser = {}) {
     // Input sanitization
     email = _.toLower(email)
 
@@ -625,51 +627,98 @@ module.exports = class User extends Model {
 
     // Check if email already exists
     const usr = await WIKI.models.users.query().findOne({ email, providerKey })
-    if (!usr) {
-      // Create the account
-      let newUsrData = {
-        providerKey,
-        email,
-        name,
-        locale: 'en',
-        defaultEditor: 'markdown',
-        tfaIsActive: false,
-        isSystem: false,
-        isActive: true,
-        isVerified: true,
-        mustChangePwd: false
-      }
-
-      if (providerKey === `local`) {
-        newUsrData.password = passwordRaw
-        newUsrData.mustChangePwd = (mustChangePassword === true)
-      }
-
-      const newUsr = await WIKI.models.users.query().insert(newUsrData)
-
-      // Assign to group(s)
-      if (groups.length > 0) {
-        await newUsr.$relatedQuery('groups').relate(groups)
-      }
-
-      if (sendWelcomeEmail) {
-        // Send welcome email
-        await WIKI.mail.send({
-          template: 'accountWelcome',
-          to: email,
-          subject: `Welcome to the wiki ${WIKI.config.title}`,
-          data: {
-            preheadertext: `You've been invited to the wiki ${WIKI.config.title}`,
-            title: `You've been invited to the wiki ${WIKI.config.title}`,
-            content: `Click the button below to access the wiki.`,
-            buttonLink: `${WIKI.config.host}/login`,
-            buttonText: 'Login'
-          },
-          text: `You've been invited to the wiki ${WIKI.config.title}: ${WIKI.config.host}/login`
-        })
-      }
-    } else {
+    if (usr) {
       throw new WIKI.Error.AuthAccountAlreadyExists()
+    }
+
+    // Create the account
+    const newUsrData = {
+      providerKey,
+      email,
+      name,
+      locale: 'en',
+      defaultEditor: 'markdown',
+      tfaIsActive: false,
+      isSystem: false,
+      isActive: true,
+      isVerified: true,
+      mustChangePwd: false
+    }
+
+    if (providerKey === `local`) {
+      newUsrData.password = passwordRaw
+      newUsrData.mustChangePwd = (mustChangePassword === true)
+    }
+
+    const newUsr = await WIKI.models.users.query().insert(newUsrData)
+
+    // Assign to group(s)
+    if (groups.length > 0) {
+      await newUsr.$relatedQuery('groups').relate(groups)
+    }
+
+    if (sendWelcomeEmail) {
+      // Send welcome email
+      await WIKI.mail.send({
+        template: 'accountWelcome',
+        to: email,
+        subject: `Welcome to the wiki ${WIKI.config.title}`,
+        data: {
+          preheadertext: `You've been invited to the wiki ${WIKI.config.title}`,
+          title: `You've been invited to the wiki ${WIKI.config.title}`,
+          content: `Click the button below to access the wiki.`,
+          buttonLink: `${WIKI.config.host}/login`,
+          buttonText: 'Login'
+        },
+        text: `You've been invited to the wiki ${WIKI.config.title}: ${WIKI.config.host}/login`
+      })
+    }
+
+    /**
+     * Start process for new Student. Create private page and give permissions
+     */
+    if (isStudent) {
+      const { content: templateContent } = await WIKI.models.pages.query().select('content').findById(constants.templatePageId)
+
+      const studentPageCreationAttributes = {
+        title: newUsrData.name,
+        content: templateContent.replace(/\$NAME/g, newUsrData.name),
+        path: `Users/${newUsr.id}`
+      }
+
+      await WIKI.models.pages.createPage({
+        path: studentPageCreationAttributes.path,
+        locale: constants.locale,
+        title: studentPageCreationAttributes.title,
+        description: '',
+        tags: [],
+        isPublished: true,
+        isPrivate: false,
+        content: studentPageCreationAttributes.content,
+        user: adminUser,
+        editor: 'ckeditor',
+        skipStorage: true
+      })
+
+      // Group
+      const group = await WIKI.models.groups.query().insertAndFetch({
+        name: `Student: ${newUsr.id}`,
+        permissions: JSON.stringify([]),
+        pageRules: JSON.stringify([{
+          id: 'default',
+          path: studentPageCreationAttributes.path,
+          roles: ['read:pages', 'read:assets', 'read:comments', 'write:comments'],
+          match: 'EXACT',
+          deny: false,
+          locales: []
+        }]),
+        isSystem: false
+      })
+
+      await WIKI.models.users.updateUser({ id: newUsr.id, groups: [constants.allowPublicGroupId, group.id] })
+
+      await WIKI.auth.reloadGroups()
+      WIKI.events.outbound.emit('reloadGroups')
     }
   }
 

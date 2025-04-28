@@ -80,12 +80,12 @@
       v-card-chin
         v-spacer
         v-btn(text, @click='isShown = false') Cancel
-        v-btn.px-3(depressed, color='primary', @click='newUser(false)')
+        v-btn.px-3(depressed, color='primary', @click='newUser()')
           v-icon(left) mdi-chevron-right
           span Create
         v-btn.px-3(depressed, color='primary', @click='newUser(true)')
-          v-icon(left) mdi-chevron-double-right
-          span Create and Close
+          v-icon(left) mdi-account-school
+          span Create Student
 </template>
 
 <script>
@@ -132,7 +132,7 @@ export default {
     }
   },
   methods: {
-    async newUser(close = false) {
+    async newUser(isStudent = false) {
       let rules = {
         email: {
           presence: {
@@ -180,6 +180,7 @@ export default {
         const resp = await this.$apollo.mutate({
           mutation: createUserMutation,
           variables: {
+            isStudent,
             providerKey: this.provider,
             email: this.email,
             passwordRaw: this.password,
@@ -202,13 +203,8 @@ export default {
           this.email = ''
           this.password = ''
           this.name = ''
-
-          if (close) {
-            this.isShown = false
-            this.$emit('refresh')
-          } else {
-            this.$refs.emailInput.focus()
-          }
+          this.isShown = false
+          this.$emit('refresh')
         } else {
           this.$store.commit('showNotification', {
             style: 'red',
@@ -221,7 +217,7 @@ export default {
       }
     },
     generatePwd() {
-      const pwdChars = 'abcdefghkmnpqrstuvwxyzABCDEFHJKLMNPQRSTUVWXYZ23456789_*=?#!()+'
+      const pwdChars = 'abcdefghkmnpqrstuvwxyzABCDEFHJKLMNPQRSTUVWXYZ23456789_*?#!()'
       this.password = _.sampleSize(pwdChars, 12).join('')
     }
   },

@@ -62,9 +62,9 @@ module.exports = {
     }
   },
   UserMutation: {
-    async create (obj, args) {
+    async create (obj, args, context) {
       try {
-        await WIKI.models.users.createNewUser(args)
+        await WIKI.models.users.createNewUser(args, context.req.user)
 
         return {
           responseResult: graphHelper.generateSuccess('User created successfully')

@@ -39,6 +39,7 @@ type UserQuery {
 
 type UserMutation {
   create(
+    isStudent: Boolean,
     email: String!
     name: String!
     passwordRaw: String
