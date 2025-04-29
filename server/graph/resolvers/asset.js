@@ -22,7 +22,7 @@ module.exports = {
       }
       const folderHierarchy = await WIKI.models.assetFolders.getHierarchy(args.folderId)
       const folderPath = folderHierarchy.map(h => h.slug).join('/')
-      const results = await WIKI.models.assets.query().where(cond)
+      const results = await WIKI.models.assets.query().where(cond).orderBy('createdAt', 'desc')
       return _.filter(results, r => {
         const path = folderPath ? `${folderPath}/${r.filename}` : r.filename
         return WIKI.auth.checkAccess(context.req.user, ['read:assets'], { path })
