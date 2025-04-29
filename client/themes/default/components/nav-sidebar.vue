@@ -360,7 +360,7 @@ export default {
 
   .v-treeview-node__root {
     min-height: 32px;
-    padding: 1px 0;
+    padding: 0 0;
   }
 
   .v-treeview-node__content {
@@ -368,7 +368,7 @@ export default {
   }
 
   .v-treeview-node__children {
-    margin-left: 16px;
+    margin-left: 0;
   }
 }
 </style>
