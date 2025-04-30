@@ -642,7 +642,8 @@ module.exports = class User extends Model {
       isSystem: false,
       isActive: true,
       isVerified: true,
-      mustChangePwd: false
+      mustChangePwd: false,
+      ...(isStudent ? { icon: 'account' } : {})
     }
 
     if (providerKey === `local`) {
