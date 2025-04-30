@@ -341,7 +341,7 @@ export default {
 <style lang="scss">
 .v-treeview{
   .tree-item {
-    font-weight: 500;
+    font-weight: 400;
     line-height: 1rem;
     font-size: 0.9rem;
   }
