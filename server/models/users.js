@@ -642,8 +642,7 @@ module.exports = class User extends Model {
       isSystem: false,
       isActive: true,
       isVerified: true,
-      mustChangePwd: false,
-      ...(isStudent ? { icon: 'account' } : {})
+      mustChangePwd: false
     }
 
     if (providerKey === `local`) {
@@ -693,6 +692,7 @@ module.exports = class User extends Model {
         title: studentPageCreationAttributes.title,
         description: '',
         tags: [],
+        icon: 'account',
         isPublished: true,
         isPrivate: false,
         content: studentPageCreationAttributes.content,
@@ -720,6 +720,32 @@ module.exports = class User extends Model {
 
       await WIKI.auth.reloadGroups()
       WIKI.events.outbound.emit('reloadGroups')
+
+      const studentPages = await WIKI.models.pages.query()
+        .select('id', 'title')
+        .where('path', 'ilike', 'Users/%')
+        .andWhere('id', '!=', constants.templatePageId)
+
+      studentPages.sort((a, b) => {
+        const titleA = a.title.toLowerCase()[0]
+        const titleB = b.title.toLowerCase()[0]
+
+        const isRussianA = /[а-яё]/i.test(titleA)
+        const isRussianB = /[а-яё]/i.test(titleB)
+
+        if (isRussianA === isRussianB) {
+          return titleA.localeCompare(titleB)
+        }
+
+        return isRussianA ? -1 : 1
+      })
+
+      const pages = [{ id: constants.templatePageId, orderPriority: 1 }, ...studentPages.map((page, idx) => ({
+        id: page.id,
+        orderPriority: idx + 2
+      }))]
+
+      await WIKI.models.pages.updatePriority({ pages })
     }
   }
 
