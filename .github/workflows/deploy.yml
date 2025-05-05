@@ -16,7 +16,7 @@ jobs:
       - name: Build docker image
         env:
           DOCKER_HOST: tcp://localhost:2375
-        run: docker build -f ./dev/build/Dockerfile -t mauzzz0/wiki-js:latest --push .
+        run: docker build -f ./dev/build/Dockerfile -t mauzzz0/wiki-js:latest .
 
       - name: Push docker image
         run: docker push mauzzz0/wiki-js:latest
