@@ -17,6 +17,9 @@ jobs:
       - uses: actions/checkout@master
         name: Checkout
 
+      - name: Install yarn
+        run: npm i -g yarn
+
       - name: Install dependencies
         run: yarn
 
