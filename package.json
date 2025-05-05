@@ -7,7 +7,6 @@
   "dev": false,
   "scripts": {
     "start": "node server",
-    "publish": "bash ./publish.sh",
     "dev": "cross-env NODE_OPTIONS='--openssl-legacy-provider' node dev",
     "build": "cross-env NODE_OPTIONS='--openssl-legacy-provider' webpack --profile --config dev/webpack/webpack.prod.js",
     "test": "eslint --format codeframe --ext .js,.vue . && pug-lint server/views && jest",
