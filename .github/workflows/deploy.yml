@@ -18,6 +18,9 @@ jobs:
           DOCKER_HOST: tcp://localhost:2375
         run: docker build -f ./dev/build/Dockerfile -t mauzzz0/wiki-js:latest .
 
+      - name: debug
+        run: echo ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Login to Docker Hub
         run: |
           echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u mauzzz0 --password-stdin
