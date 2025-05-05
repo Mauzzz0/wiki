@@ -14,7 +14,10 @@ jobs:
         name: Checkout
 
       - name: Build docker image
-        run: docker build -f ./dev/build/Dockerfile -t mauzzz0/wiki-js:latest .
+        shell: pwsh
+        run: |
+          $command = "docker build -f ./dev/build/Dockerfile -t mauzzz0/wiki-js:latest --push ."
+          Start-Process pwsh -ArgumentList "-command $command" -Verb RunAs -Wait
 
       - name: Push docker image
         run: docker push mauzzz0/wiki-js:latest
