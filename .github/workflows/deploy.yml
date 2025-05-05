@@ -14,10 +14,10 @@ jobs:
         name: Checkout
 
       - name: Build docker image
+        env:
+          DOCKER_HOST: tcp://localhost:2375
         shell: pwsh
-        run: |
-          $command = "docker build -f ./dev/build/Dockerfile -t mauzzz0/wiki-js:latest --push ."
-          Start-Process pwsh -ArgumentList "-command $command" -Verb RunAs -Wait
+        run: docker build -f ./dev/build/Dockerfile -t mauzzz0/wiki-js:latest --push .
 
       - name: Push docker image
         run: docker push mauzzz0/wiki-js:latest
