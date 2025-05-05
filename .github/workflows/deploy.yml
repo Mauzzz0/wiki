@@ -31,5 +31,5 @@ jobs:
         run: |
           cd C:\wiki-compose
           docker pull mauzzz0/wiki-js:latest
-          docker compose down
-          docker compose up -d
+          docker compose down wiki
+          docker compose up wiki -d
