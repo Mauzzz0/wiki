@@ -180,7 +180,7 @@
           template(v-if='isAuthenticated && isAdmin')
             v-tooltip(bottom, v-if='mode !== `admin`')
               template(v-slot:activator='{ on }')
-                v-btn(icon, tile, height='64', v-on='on', href='/a', :aria-label='$t(`common:header.admin`)')
+                v-btn(icon, tile, height='64', v-on='on', href='/a/pages', :aria-label='$t(`common:header.admin`)')
                   v-icon(color='grey') mdi-cog
               span {{$t('common:header.admin')}}
             v-btn(v-else, text, tile, height='64', href='/', :aria-label='$t(`common:actions.exit`)')
