@@ -1,13 +1,12 @@
 name: Deploy
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   Deploy:
     name: Check
     runs-on: self-hosted
+    if: github.event_name == 'workflow_dispatch'
     steps:
       - name: Set up Node.js
         uses: actions/setup-node@v2
