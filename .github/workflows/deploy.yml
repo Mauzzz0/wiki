@@ -14,14 +14,17 @@ jobs:
         name: Checkout
 
       - name: Build docker image
-        run: docker buildx build --platform linux/amd64 -f ./dev/build/Dockerfile -t mauzzz0/wiki-js:latest --push .
+        run: docker buildx build --platform linux/amd64 -f ./dev/build/Dockerfile -t mauzzz0/wiki-js:latest .
 
-      - name: Update and restart containers
-        run: |
-          cd C:\wiki-compose
-          docker pull mauzzz0/wiki-js:latest
-          docker compose down
-          docker compose up -d
+      - name: Push docker image
+        run: docker push mauzzz0/wiki-js:latest
+
+#      - name: Update and restart containers
+#       run: |
+#          cd C:\wiki-compose
+#          docker pull mauzzz0/wiki-js:latest
+#          docker compose down
+#          docker compose up -d
 #      - name: Set up Node.js
 #        uses: actions/setup-node@v2
 #        with:
