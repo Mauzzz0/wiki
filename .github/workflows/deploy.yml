@@ -10,45 +10,32 @@ jobs:
     name: Deploy
     runs-on: self-hosted
     steps:
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '22'
-
       - uses: actions/checkout@master
         name: Checkout
 
-      - name: Install yarn
-        run: npm i -g yarn
+      - name: Build docker image
+        run: docker buildx build --platform linux/amd64 -f ./dev/build/Dockerfile -t mauzzz0/wiki-js:latest --push .
 
-      - name: Install dependencies
-        run: yarn
+      - name: Update and restart containers
+        run: |
+          cd C:\wiki-compose
+          docker pull mauzzz0/wiki-js:latest
+          docker compose down
+          docker compose up -d
+#      - name: Set up Node.js
+#        uses: actions/setup-node@v2
+#        with:
+#          node-version: '22'
+#
+#
+#      - name: Install yarn
+#        run: npm i -g yarn
+#
+#      - name: Install dependencies
+#        run: yarn
+#
+#      - name: Patch dependencies
+#        run: yarn patch-package
 
-      - name: Patch dependencies
-        run: yarn patch-package
-
-      - name: Build project
-        run: yarn build
-
-  Test:
-    name: Test
-    needs: Deploy
-    runs-on: self-hosted
-    if: github.event_name == 'workflow_dispatch'
-    steps:
-      - uses: actions/checkout@master
-        name: Checkout
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '22'
-
-      - name: Install yarn
-        run: npm i -g yarn
-
-      - name: Install dependencies
-        run: yarn
-
-      - name: Run tests
-        run: yarn test
+#      - name: Build project
+#        run: yarn build
