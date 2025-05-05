@@ -9,10 +9,6 @@ jobs:
   Deploy:
     name: Deploy
     runs-on: self-hosted
-    env:
-      DOCKER_HUB_USERNAME: mauzzz0
-      DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
-
     steps:
       - uses: actions/checkout@master
         name: Checkout
@@ -24,7 +20,7 @@ jobs:
 
       - name: Login to Docker Hub
         run: |
-          echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
+          echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u mauzzz0 --password-stdin
 
       - name: Push docker image
         run: docker push mauzzz0/wiki-js:latest
