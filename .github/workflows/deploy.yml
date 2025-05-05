@@ -16,7 +16,6 @@ jobs:
       - name: Build docker image
         env:
           DOCKER_HOST: tcp://localhost:2375
-        shell: pwsh
         run: docker build -f ./dev/build/Dockerfile -t mauzzz0/wiki-js:latest --push .
 
       - name: Push docker image
