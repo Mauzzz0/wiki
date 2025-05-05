@@ -1,0 +1,27 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Deploy:
+    name: Check
+    runs-on: self-hosted
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22'
+
+      - uses: actions/checkout@master
+        name: Checkout
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Patch dependencies
+        run: yarn patch-package
+
+      - name: Build project
+        run: yarn build
