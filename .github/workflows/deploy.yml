@@ -1,12 +1,14 @@
-name: Deploy
+name: Deploy and Test
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   Deploy:
-    name: Check
+    name: Deploy
     runs-on: self-hosted
-    if: github.event_name == 'workflow_dispatch'
     steps:
       - name: Set up Node.js
         uses: actions/setup-node@v2
@@ -27,3 +29,26 @@ jobs:
 
       - name: Build project
         run: yarn build
+
+  Test:
+    name: Test
+    needs: Deploy
+    runs-on: self-hosted
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@master
+        name: Checkout
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22'
+
+      - name: Install yarn
+        run: npm i -g yarn
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Run tests
+        run: yarn test
