@@ -310,6 +310,7 @@ module.exports = class Page extends Model {
       isPublished: opts.isPublished,
       localeCode: opts.locale,
       path: opts.path,
+      icon: opts.icon || 'text-box',
       publishEndDate: opts.publishEndDate || '',
       publishStartDate: opts.publishStartDate || '',
       title: opts.title,
