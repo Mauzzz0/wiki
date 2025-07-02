@@ -198,7 +198,7 @@ export default {
       }
     },
     goHome (event) {
-      const url = siteLangs.length > 0 ? `/${this.locale}/home` : '/'
+      const url = siteLangs.length > 0 ? `/${this.locale}/home` : '/home'
 
       if (event.ctrlKey || event.metaKey) {
         // Если зажат Ctrl или Cmd (на Mac), открываем в новом окне
