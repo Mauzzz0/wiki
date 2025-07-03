@@ -1,6 +1,7 @@
 <template lang="pug">
   v-app
-    .login(:style='`background-image: url(` + bgUrl + `);`')
+    // --- :style='`background-image: url(` + bgUrl + `);`'
+    .login()
       .login-sd
         .d-flex.mb-5
           .login-logo
@@ -39,13 +40,13 @@
         //- LOGIN FORM
         //-------------------------------------------------
         template(v-if='screen === `login` && selectedStrategy.strategy.useForm')
-          .login-subtitle
-            .text-subtitle-1 {{$t('auth:enterCredentials')}}
+          //.login-subtitle
+          //  .text-subtitle-1 {{$t('auth:enterCredentials')}}
           .login-form
             v-text-field(
               solo
               flat
-              prepend-inner-icon='mdi-clipboard-account'
+              prepend-inner-icon='mdi-email'
               background-color='white'
               color='blue darken-2'
               hide-details
@@ -59,13 +60,13 @@
             v-text-field.mt-2(
               solo
               flat
-              prepend-inner-icon='mdi-form-textbox-password'
+              prepend-inner-icon='mdi-key-variant'
               background-color='white'
               color='blue darken-2'
               hide-details
               ref='iptPassword'
               v-model='password'
-              :append-icon='hidePassword ? "mdi-eye-off" : "mdi-eye"'
+              :append-icon='hidePassword ? "mdi-eye-outline" : "mdi-eye-remove-outline"'
               @click:append='() => (hidePassword = !hidePassword)'
               :type='hidePassword ? "password" : "text"'
               :placeholder='$t("auth:fields.password")'
@@ -81,21 +82,21 @@
               @click='login'
               :loading='isLoading'
               ) {{ $t('auth:actions.login') }}
-            .text-center.mt-5
-              v-btn.text-none(
-                text
-                rounded
-                color='grey darken-3'
-                @click.stop.prevent='forgotPassword'
-                href='#forgot'
-                ): .caption {{ $t('auth:forgotPasswordLink') }}
-              v-btn.text-none(
-                v-if='selectedStrategyKey === `local` && selectedStrategy.selfRegistration'
-                color='indigo darken-2'
-                text
-                rounded
-                href='/register'
-                ): .caption {{ $t('auth:switchToRegister.link') }}
+            //.text-center.mt-5
+            //  v-btn.text-none(
+            //    text
+            //    rounded
+            //    color='grey darken-3'
+            //    @click.stop.prevent='forgotPassword'
+            //    href='#forgot'
+            //    ): .caption {{ $t('auth:forgotPasswordLink') }}
+            //  v-btn.text-none(
+            //    v-if='selectedStrategyKey === `local` && selectedStrategy.selfRegistration'
+            //    color='indigo darken-2'
+            //    text
+            //    rounded
+            //    href='/register'
+            //    ): .caption {{ $t('auth:switchToRegister.link') }}
         //-------------------------------------------------
         //- FORGOT PASSWORD FORM
         //-------------------------------------------------
@@ -692,12 +693,12 @@ export default {
 
 <style lang="scss">
   .login {
-    // background-image: url('/_assets/img/splash/1.jpg');
     background-color: mc('grey', '900');
-    background-size: cover;
-    background-position: center center;
     width: 100%;
     height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     &-sd {
       background-color: rgba(255,255,255,.8);
@@ -705,9 +706,10 @@ export default {
       -webkit-backdrop-filter: blur(10px);
       border-left: 1px solid rgba(255,255,255,.85);
       border-right: 1px solid rgba(255,255,255,.85);
-      width: 450px;
-      height: 100%;
-      margin-left: 5vw;
+      border-radius: 12px;
+      //padding: 10px;
+      width: 400px;
+      height: auto;
 
       @at-root .no-backdropfilter & {
         background-color: rgba(255,255,255,.95);
@@ -763,8 +765,8 @@ export default {
     }
 
     &-form {
-      padding: 12px;
-      border-top: 1px solid rgba(255,255,255,.85);
+      padding: 24px;
+      //border-top: 1px solid rgba(255,255,255,.85);
     }
 
     &-main {
