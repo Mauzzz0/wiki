@@ -257,6 +257,7 @@ import _ from 'lodash'
 import Cookies from 'js-cookie'
 import gql from 'graphql-tag'
 import { sync } from 'vuex-pathify'
+import { decode } from 'jsonwebtoken'
 
 export default {
   i18nOptions: { namespaces: 'auth' },
@@ -347,6 +348,15 @@ export default {
     if (this.changePwdContinuationToken) {
       this.screen = 'changePwd'
       this.continuationToken = this.changePwdContinuationToken
+    }
+
+    const token = Cookies.get('jwt')
+    if (token) {
+      const decoded = decode(token)
+
+      if (decoded.iss === 'urn:wiki.js' && decoded.exp >= Date.now() / 1000) {
+        return window.location.assign('/home')
+      }
     }
   },
   methods: {
