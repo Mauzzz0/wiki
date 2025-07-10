@@ -649,7 +649,7 @@ export default {
   },
   methods: {
     goHome () {
-      window.location.assign('/')
+      window.location.assign('/home')
     },
     toggleNavigation () {
       this.navOpen = !this.navOpen
