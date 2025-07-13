@@ -380,18 +380,28 @@ Prism.plugins.NormalizeWhitespace.setDefaults({
 })
 Prism.plugins.toolbar.registerButton('copy-to-clipboard', (env) => {
   let linkCopy = document.createElement('button')
-  linkCopy.textContent = 'Copy'
+  linkCopy.textContent = 'Скопировать'
+  linkCopy.style.position = 'relative'
+  linkCopy.style.zIndex = '100'
+
+  linkCopy.addEventListener('mouseenter', () => {
+    linkCopy.style.color = '#fff'
+  })
+
+  linkCopy.addEventListener('mouseleave', () => {
+    linkCopy.style.color = '#bbb'
+  })
 
   const clip = new ClipboardJS(linkCopy, {
     text: () => { return env.code }
   })
 
   clip.on('success', () => {
-    linkCopy.textContent = 'Copied!'
+    linkCopy.textContent = 'Скопировано!'
     resetClipboardText()
   })
   clip.on('error', () => {
-    linkCopy.textContent = 'Press Ctrl+C to copy'
+    linkCopy.textContent = 'Нажмите Ctrl+C для копирования'
     resetClipboardText()
   })
 
@@ -399,8 +409,8 @@ Prism.plugins.toolbar.registerButton('copy-to-clipboard', (env) => {
 
   function resetClipboardText() {
     setTimeout(() => {
-      linkCopy.textContent = 'Copy'
-    }, 5000)
+      linkCopy.textContent = 'Скопировать'
+    }, 3000)
   }
 })
 
