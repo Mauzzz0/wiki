@@ -20,8 +20,16 @@
     v-layout(row)
       v-flex(xs5, md4)
         v-toolbar.nav-header-inner(color='black', dark, flat, :class='$vuetify.rtl ? `pr-3` : `pl-3`')
-          v-avatar(tile, size='34', @click='goHome')
-            v-img.org-logo(:src='logoUrl')
+          a.home-link(
+            href="/home",
+            target="_blank",
+            rel="noopener noreferrer",
+            @click.prevent="goHome",
+            @mousedown.prevent,
+            @auxclick.prevent="goHome"
+          )
+            v-avatar(tile, size='34')
+              v-img.org-logo(:src='logoUrl')
           //- v-menu(open-on-hover, offset-y, bottom, left, min-width='250', transition='slide-y-transition')
           //-   template(v-slot:activator='{ on }')
           //-     v-app-bar-nav-icon.btn-animate-app(v-on='on', :class='$vuetify.rtl ? `mx-0` : ``')
@@ -503,8 +511,16 @@ export default {
     logout () {
       window.location.assign('/logout')
     },
-    goHome () {
-      window.location.assign('/home')
+    goHome(event) {
+      // Отменяем стандартное поведение для среднего клика
+      if (event.button === 1) event.preventDefault()
+
+      // Если зажат Ctrl/Cmd или средняя кнопка мыши
+      if (event.ctrlKey || event.metaKey || event.button === 1) {
+        window.open('/home', '_blank')
+      } else {
+        window.location.assign('/home')
+      }
     }
   }
 }
