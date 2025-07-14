@@ -6,6 +6,7 @@
         :color='$vuetify.theme.dark ? `grey darken-4` : `blue darken-2`'
         style='min-width:0;'
         @click='goHome'
+        @auxclick="goHome"
         :aria-label='$t(`common:header.home`)'
         )
         v-icon(size='20') mdi-home
@@ -14,6 +15,7 @@
         :color='$vuetify.theme.dark ? `grey darken-4` : `blue darken-2`'
         style='min-width:0;'
         @click='goStudentProfile'
+        @auxclick='goStudentProfile'
         :aria-label='$t(`common:header.home`)'
       )
         v-icon(size='20') mdi-account-box
@@ -22,6 +24,7 @@
         :color='$vuetify.theme.dark ? `grey darken-4` : `blue darken-2`'
         style='flex: 1 1 100%;'
         @click='goPlan'
+        @auxclick='goPlan'
         :aria-label='$t(`common:header.home`)'
       )
         v-icon(size='20') mdi-book-education
@@ -200,7 +203,7 @@ export default {
     goHome (event) {
       const url = siteLangs.length > 0 ? `/${this.locale}/home` : '/home'
 
-      if (event.ctrlKey || event.metaKey) {
+      if (event.ctrlKey || event.metaKey || event.button === 1) {
         // Если зажат Ctrl или Cmd (на Mac), открываем в новом окне
         window.open(url, '_blank')
       } else {
@@ -211,7 +214,7 @@ export default {
     goStudentProfile (event) {
       const url = '/Users/profile'
 
-      if (event.ctrlKey || event.metaKey) {
+      if (event.ctrlKey || event.metaKey || event.button === 1) {
         window.open(url, '_blank')
       } else {
         window.location.assign(url)
@@ -220,7 +223,7 @@ export default {
     goPlan (event) {
       const url = '/plan'
 
-      if (event.ctrlKey || event.metaKey) {
+      if (event.ctrlKey || event.metaKey || event.button === 1) {
         window.open(url, '_blank')
       } else {
         window.location.assign(url)
@@ -364,11 +367,11 @@ export default {
   }
 
   .v-treeview-node__content {
-    margin: 1px 0;
+    margin: 0 0;
   }
 
   .v-treeview-node__children {
-    margin-left: 0;
+    margin-left: -12px;
   }
 }
 </style>
