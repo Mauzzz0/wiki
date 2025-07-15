@@ -686,7 +686,7 @@ module.exports = class User extends Model {
         path: `Users/${newUsr.id}`
       }
 
-      await WIKI.models.pages.createPage({
+      const createdPage = await WIKI.models.pages.createPage({
         path: studentPageCreationAttributes.path,
         locale: constants.locale,
         title: studentPageCreationAttributes.title,
@@ -701,22 +701,7 @@ module.exports = class User extends Model {
         skipStorage: true
       })
 
-      // Group
-      const group = await WIKI.models.groups.query().insertAndFetch({
-        name: `Student: ${newUsr.id}`,
-        permissions: JSON.stringify([]),
-        pageRules: JSON.stringify([{
-          id: 'default',
-          path: studentPageCreationAttributes.path,
-          roles: ['read:pages', 'read:assets', 'read:comments', 'write:comments'],
-          match: 'EXACT',
-          deny: false,
-          locales: []
-        }]),
-        isSystem: false
-      })
-
-      await WIKI.models.users.updateUser({ id: newUsr.id, groups: [constants.allowPublicGroupId, group.id] })
+      await WIKI.models.users.updateUser({ id: newUsr.id, groups: [constants.allowPublicGroupId] })
 
       await WIKI.auth.reloadGroups()
       WIKI.events.outbound.emit('reloadGroups')
@@ -725,6 +710,7 @@ module.exports = class User extends Model {
         .select('id', 'title')
         .where('path', 'ilike', 'Users/%')
         .andWhere('id', '!=', constants.templatePageId)
+        .andWhere('id', '!=', createdPage.id)
 
       studentPages.sort((a, b) => {
         const titleA = a.title.toLowerCase()[0]
@@ -734,15 +720,15 @@ module.exports = class User extends Model {
         const isRussianB = /[а-яё]/i.test(titleB)
 
         if (isRussianA === isRussianB) {
-          return titleA.localeCompare(titleB)
+          return a.orderPriority - b.orderPriority
         }
 
         return isRussianA ? -1 : 1
       })
 
-      const pages = [{ id: constants.templatePageId, orderPriority: 1 }, ...studentPages.map((page, idx) => ({
+      const pages = [{ id: constants.templatePageId, orderPriority: 1 }, { id: createdPage.id, orderPriority: 2 }, ...studentPages.map((page, idx) => ({
         id: page.id,
-        orderPriority: idx + 2
+        orderPriority: idx + 3
       }))]
 
       await WIKI.models.pages.updatePriority({ pages })

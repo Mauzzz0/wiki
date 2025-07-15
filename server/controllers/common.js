@@ -412,6 +412,18 @@ router.get('/_userav/:uid', async (req, res, next) => {
 })
 
 /**
+ * User page redirect
+ */
+router.get('/Users/profile', async (req, res, next) => {
+  // Administrator
+  if (req.user.id === 1) {
+    res.redirect(`/Users`)
+  } else {
+    res.redirect(`/Users/${req.user.id}`)
+  }
+})
+
+/**
  * View document / asset
  */
 router.get('/*', async (req, res, next) => {
@@ -428,22 +440,14 @@ router.get('/*', async (req, res, next) => {
     req.i18n.changeLanguage(pageArgs.locale)
 
     try {
-      // -> Get Page from cache
-      if (pageArgs.path === 'Users/profile') { // Ruslan: Open User's page on "Users/profile" request for student, but "Users" for admin
-        if (req.user.id === 1) { // Administrator
-          res.redirect(`/Users`)
+      const match = pageArgs.path.match(/^Users\/(\d+)$/)
+
+      // Request to /users/:id
+      if (match && req.user.id !== 1) { // Is not admin
+        const number = parseInt(match[1], 10) // Извлекаем число
+        if (req.user.id !== number) {
+          res.redirect(`/Users/${req.user.id}`)
           return
-        }
-
-        for (const groupId of req.user.groups) {
-          const group = await WIKI.models.groups.query().findById(groupId)
-
-          if (group.name.startsWith('Student:')) {
-            const [, slug] = group.name.split(' ')
-
-            res.redirect(`/Users/${slug}`)
-            return
-          }
         }
       }
 
