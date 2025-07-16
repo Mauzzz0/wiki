@@ -59,7 +59,6 @@
 import _ from 'lodash'
 import gql from 'graphql-tag'
 import { get, sync } from 'vuex-pathify'
-import { AtomSpinner } from 'epic-spinners'
 import { Base64 } from 'js-base64'
 import { StatusIndicator } from 'vue-status-indicator'
 
@@ -72,7 +71,6 @@ WIKI.$store.registerModule('editor', editorStore)
 export default {
   i18nOptions: { namespaces: 'editor' },
   components: {
-    AtomSpinner,
     StatusIndicator,
     editorApi: () => import(/* webpackChunkName: "editor-api", webpackMode: "lazy" */ './editor/editor-api.vue'),
     editorCode: () => import(/* webpackChunkName: "editor-code", webpackMode: "lazy" */ './editor/editor-code.vue'),
@@ -596,7 +594,6 @@ export default {
 </script>
 
 <style lang='scss'>
-
   .editor {
     background-color: mc('grey', '900') !important;
     min-height: 100vh;
@@ -609,9 +606,4 @@ export default {
       text-align: center;
     }
   }
-
-  .atom-spinner.is-inline {
-    display: inline-block;
-  }
-
 </style>

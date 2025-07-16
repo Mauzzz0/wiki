@@ -2,10 +2,10 @@
   v-dialog(v-model='value', persistent, max-width='350', :overlay-color='color', overlay-opacity='.7')
     v-card.loader-dialog.radius-7(:color='color', dark)
       v-card-text.text-center.py-4
-        atom-spinner.is-inline(
+        half-circle-spinner.is-inline(
           v-if='mode === `loading`'
           :animation-duration='1000'
-          :size='60'
+          :size='40'
           color='#FFF'
           )
         img(v-else-if='mode === `icon`', :src='`/_assets/svg/icon-` + icon + `.svg`', :alt='icon')
@@ -14,11 +14,11 @@
 </template>
 
 <script>
-import { AtomSpinner } from 'epic-spinners'
+import { HalfCircleSpinner } from 'epic-spinners'
 
 export default {
   components: {
-    AtomSpinner
+    HalfCircleSpinner
   },
   props: {
     value: {
@@ -53,7 +53,7 @@ export default {
   .loader-dialog {
     transition: all .4s ease;
 
-    .atom-spinner.is-inline {
+    .half-circle-spinner.is-inline {
       display: inline-block;
     }
     .caption {
